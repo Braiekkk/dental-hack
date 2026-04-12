@@ -26,10 +26,10 @@ import { analyzeDentalImage } from "@/lib/patient-status-api";
 // Mock patient data
 const mockPatientData = {
   1: {
-    id: 1, name: "Sarah Johnson", phone: "+216 55 123 456", city: "Sousse",
+    id: 1, name: "rayen braiek", phone: "+216 55 123 456", city: "Sousse",
     dob: "1990-03-15", address: "12 Rue de la Liberté, Sousse",
     work: "Teacher", description: "Regular checkup patient. Allergic to penicillin.",
-    createdAt: "2024-06-15", abnormalTeeth: 2,
+    createdAt: "2024-06-15", abnormalTeeth: 0,
   },
   2: {
     id: 2, name: "Ahmed Ben Ali", phone: "+216 22 789 012", city: "Tunis",
@@ -64,12 +64,7 @@ const mockPatientData = {
 } as Record<number, any>;
 
 const mockTeeth: Record<number, ToothData[]> = {
-  1: [
-    { number: 14, status: "caries", notes: "Mesial caries, composite filling needed" },
-    { number: 24, status: "filling", notes: "Composite filling placed 2025-12" },
-    { number: 36, status: "crown", notes: "PFM crown, placed 2025-08" },
-    { number: 38, status: "missing_teeth", notes: "Extracted 2024-11" },
-  ],
+  1: [],
   2: [],
   3: [
     { number: 11, status: "root_piece", notes: "Root piece visible, evaluate restoration" },
@@ -117,9 +112,9 @@ const mockFiles = [
 ];
 
 const visitTypeColors: Record<string, string> = {
-  "Routine check-up": "bg-info/10 text-info border-info/20",
-  "Dental cleaning": "bg-success/10 text-success border-success/20",
-  Filling: "bg-primary/10 text-primary border-primary/20",
+  "Routine check-up": "bg-sky-100 text-sky-900 border-sky-400/70 font-semibold",
+  "Dental cleaning": "bg-emerald-100 text-emerald-900 border-emerald-400/70 font-semibold",
+  Filling: "bg-amber-100 text-amber-900 border-amber-400/70 font-semibold",
   "Emergency visit": "bg-destructive/10 text-destructive border-destructive/20",
   "Tooth extraction": "bg-muted text-muted-foreground border-border/70",
 };
@@ -176,6 +171,8 @@ export default function PatientProfile() {
   const [isAnalyzingFile, setIsAnalyzingFile] = useState(false);
   const [uploadStatusMessage, setUploadStatusMessage] = useState<string | null>(null);
   const [visits, setVisits] = useState<VisitHistoryItem[]>(mockVisits);
+  const [isAddToothNoteOpen, setIsAddToothNoteOpen] = useState(false);
+  const [newToothNote, setNewToothNote] = useState("");
   const [isAddVisitOpen, setIsAddVisitOpen] = useState(false);
   const [isEditVisitOpen, setIsEditVisitOpen] = useState(false);
   const [editingVisitIndex, setEditingVisitIndex] = useState<number | null>(null);
@@ -222,6 +219,32 @@ export default function PatientProfile() {
         tooth.number === toothNumber ? { ...tooth, status: nextStatus } : tooth
       )
     );
+  };
+
+  const handleOpenAddToothNote = () => {
+    if (selectedTooth === null) {
+      return;
+    }
+
+    const currentNote = teethData.find((tooth) => tooth.number === selectedTooth)?.notes ?? "";
+    setNewToothNote(currentNote);
+    setIsAddToothNoteOpen(true);
+  };
+
+  const handleSaveToothNote = () => {
+    if (selectedTooth === null) {
+      return;
+    }
+
+    const note = newToothNote.trim();
+    setTeethData((current) =>
+      current.map((tooth) =>
+        tooth.number === selectedTooth
+          ? { ...tooth, notes: note.length > 0 ? note : undefined }
+          : tooth
+      )
+    );
+    setIsAddToothNoteOpen(false);
   };
 
   const handleAddVisit = () => {
@@ -556,13 +579,40 @@ export default function PatientProfile() {
                         </div>
                       )}
                       <div className="pt-2 border-t space-y-2">
-                        <Button size="sm" variant="outline" className="w-full justify-start">
-                          <Pencil className="mr-2 h-3.5 w-3.5" /> Update Status
-                        </Button>
-                        <Button size="sm" variant="outline" className="w-full justify-start">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="w-full justify-start"
+                          onClick={handleOpenAddToothNote}
+                        >
                           <FileText className="mr-2 h-3.5 w-3.5" /> Add Note
                         </Button>
                       </div>
+                      <Dialog open={isAddToothNoteOpen} onOpenChange={setIsAddToothNoteOpen}>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle className="font-display">Tooth #{selectedTooth} Note</DialogTitle>
+                          </DialogHeader>
+                          <div className="grid gap-4 py-2">
+                            <div>
+                              <Label htmlFor="tooth-note">Note</Label>
+                              <Textarea
+                                id="tooth-note"
+                                className="mt-1.5 min-h-[110px]"
+                                value={newToothNote}
+                                onChange={(e) => setNewToothNote(e.target.value)}
+                                placeholder="Add clinical note for this tooth..."
+                              />
+                            </div>
+                            <div className="flex justify-end gap-2">
+                              <Button variant="outline" onClick={() => setIsAddToothNoteOpen(false)}>
+                                Cancel
+                              </Button>
+                              <Button onClick={handleSaveToothNote}>Save Note</Button>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   );
                 })() : (
@@ -577,7 +627,7 @@ export default function PatientProfile() {
 
         <TabsContent value="visits">
           <Dialog open={isEditVisitOpen} onOpenChange={setIsEditVisitOpen}>
-            <DialogContent>
+            <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="font-display">Edit Appointment</DialogTitle>
               </DialogHeader>
