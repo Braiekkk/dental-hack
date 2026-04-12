@@ -24,7 +24,7 @@ interface Patient {
 }
 
 const mockPatients: Patient[] = [
-  { id: 1, name: "Amina Ben Youssef", phone: "+216 55 123 456", city: "Sousse", dob: "1990-03-15", abnormalTeeth: 2, lastVisit: "2026-04-08" },
+  { id: 1, name: "rayen braiek", phone: "+216 55 123 456", city: "Sousse", dob: "1990-03-15", abnormalTeeth: 0, lastVisit: "2026-04-08" },
   { id: 2, name: "Ahmed Ben Ali", phone: "+216 22 789 012", city: "Tunis", dob: "1985-07-22", abnormalTeeth: 0, lastVisit: "2026-04-10" },
   { id: 3, name: "Mouna Triki", phone: "+216 98 345 678", city: "Sfax", dob: "1992-11-03", abnormalTeeth: 3, lastVisit: "2026-04-05" },
   { id: 4, name: "Youssef Trabelsi", phone: "+216 50 456 789", city: "Monastir", dob: "1978-01-19", abnormalTeeth: 1, lastVisit: "2026-03-28" },

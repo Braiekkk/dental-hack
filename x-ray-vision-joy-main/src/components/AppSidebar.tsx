@@ -79,7 +79,7 @@ export function AppSidebar() {
             <p className="text-[11px] uppercase tracking-[0.14em] text-sidebar-foreground/65">Today</p>
             <div className="mt-1 flex items-center gap-2 text-sm font-semibold text-sidebar-foreground">
               <Sparkles className="h-3.5 w-3.5 text-sidebar-primary-foreground" />
-              4 reports pending review
+              7 appointments scheduled today
             </div>
           </div>
         )}

@@ -73,9 +73,9 @@ const toolImageClassByName: Record<string, string> = {
 const mockStock: StockItem[] = [
   { id: 1, name: "Mouth Mirror", remaining: 500, threshold: 50, expiration: "N/A", category: "Instruments" },
   { id: 2, name: "Carvers Plastics", remaining: 71, threshold: 20, expiration: "N/A", category: "Instruments" },
-  { id: 3, name: "Forceps", remaining: 150, threshold: 30, expiration: "N/A", category: "Instruments" },
+  { id: 3, name: "Forceps", remaining: 18, threshold: 30, expiration: "N/A", category: "Instruments" },
   { id: 4, name: "Syringes", remaining: 500, threshold: 100, expiration: "2027-06-01", category: "Supplies" },
-  { id: 5, name: "Orthodontic Pliers", remaining: 78, threshold: 20, expiration: "N/A", category: "Instruments" },
+  { id: 5, name: "Orthodontic Pliers", remaining: 12, threshold: 20, expiration: "N/A", category: "Instruments" },
   { id: 6, name: "Dental Cotton Rolls", remaining: 600, threshold: 100, expiration: "2028-01-01", category: "Supplies" },
   { id: 7, name: "Face Mask", remaining: 400, threshold: 50, expiration: "2027-03-15", category: "PPE" },
   { id: 8, name: "Gloves", remaining: 600, threshold: 100, expiration: "2027-12-01", category: "PPE" },
