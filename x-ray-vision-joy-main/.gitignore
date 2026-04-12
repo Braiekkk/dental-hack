@@ -10,10 +10,19 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+coverage
+.nyc_output
+.eslintcache
+.cache
+.vite
+.vitest
 *.local
-.claude
 
-Rapport_Med_Aziz_Sridi.pdf
+# Env files
+.env
+.env.*
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
