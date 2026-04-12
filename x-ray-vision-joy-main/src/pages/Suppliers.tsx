@@ -49,10 +49,15 @@ export default function Suppliers() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-2xl font-bold">Suppliers</h1>
-          <p className="text-muted-foreground text-sm mt-1">Manage suppliers and supply bills</p>
+      <div className="soft-panel p-6 sm:p-7 relative overflow-hidden">
+        <div className="absolute -top-16 right-8 h-36 w-36 rounded-full bg-[#e8f4ff] blur-3xl" />
+        <div className="absolute -bottom-14 left-6 h-32 w-32 rounded-full bg-[#ffe8f4] blur-3xl" />
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h1 className="page-title">Supplier Network</h1>
+            <p className="page-subtitle">Manage procurement relationships and billing history.</p>
+          </div>
+          <span className="ribbon-chip w-fit">Procurement hub</span>
         </div>
         <Dialog>
           <DialogTrigger asChild>
@@ -71,16 +76,16 @@ export default function Suppliers() {
         </Dialog>
       </div>
 
-      <Card>
+      <Card className="soft-panel overflow-hidden">
         <CardContent className="p-0">
-          <div className="p-4 border-b">
+          <div className="p-4 border-b bg-gradient-to-r from-[#fff8ed]/55 to-[#f6f8ff]/55">
             <div className="relative max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search suppliers..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-9"
+                className="pl-9 bg-white/80"
               />
             </div>
           </div>

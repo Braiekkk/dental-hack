@@ -1,6 +1,6 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { Bell, Sparkles } from "lucide-react";
+import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
@@ -26,9 +26,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="ribbon-chip hidden md:inline-flex">
-                  <Sparkles className="h-3.5 w-3.5" /> AI ready
-                </span>
                 <Button variant="outline" size="icon" className="rounded-xl">
                   <Bell className="h-4 w-4" />
                 </Button>

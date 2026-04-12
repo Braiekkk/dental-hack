@@ -37,15 +37,19 @@ export default function XRayAnalysis() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-bold">X-Ray Analysis</h1>
-        <p className="text-muted-foreground text-sm mt-1">AI-powered dental panoramic analysis</p>
+      <div className="soft-panel p-6 sm:p-7 relative overflow-hidden">
+        <div className="absolute -top-16 -right-8 h-40 w-40 rounded-full bg-[#e7f4ff] blur-3xl" />
+        <div className="absolute -bottom-14 left-10 h-32 w-32 rounded-full bg-[#ffe8f4] blur-3xl" />
+        <div className="relative">
+          <h1 className="page-title">AI Imaging Lab</h1>
+          <p className="page-subtitle">Panoramic diagnostics with anomaly scoring and explainable heatmaps.</p>
+        </div>
       </div>
 
       {!uploaded ? (
-        <Card className="border-dashed border-2">
+        <Card className="border-dashed border-2 border-primary/35 bg-white/70">
           <CardContent className="p-12 flex flex-col items-center text-center">
-            <div className="h-16 w-16 rounded-2xl bg-accent flex items-center justify-center mb-4">
+            <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#ffeef7] to-[#e9f6ff] border border-border/70 flex items-center justify-center mb-4">
               <Upload className="h-8 w-8 text-accent-foreground" />
             </div>
             <h3 className="font-display text-lg font-semibold">Upload Panoramic X-Ray</h3>
@@ -59,7 +63,7 @@ export default function XRayAnalysis() {
           </CardContent>
         </Card>
       ) : analyzing ? (
-        <Card>
+        <Card className="soft-panel">
           <CardContent className="p-12 flex flex-col items-center text-center">
             <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 animate-pulse">
               <Zap className="h-8 w-8 text-primary" />
@@ -68,8 +72,8 @@ export default function XRayAnalysis() {
             <p className="text-sm text-muted-foreground mt-2">
               Running Mask R-CNN tooth detection and ResNet-50 anomaly classification
             </p>
-            <div className="mt-6 w-64 h-2 bg-muted rounded-full overflow-hidden">
-              <div className="h-full bg-primary rounded-full animate-pulse" style={{ width: "60%" }} />
+              <div className="mt-6 w-64 h-2 bg-muted rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-[#ffd9ea] to-[#caebff] rounded-full animate-pulse" style={{ width: "60%" }} />
             </div>
           </CardContent>
         </Card>
