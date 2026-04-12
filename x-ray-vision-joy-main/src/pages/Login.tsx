@@ -22,7 +22,7 @@ export default function Login() {
 
       <Card className="w-full max-w-md border-border/70 shadow-[0_24px_60px_-34px_rgba(15,23,42,0.55)] bg-white/92 backdrop-blur-md relative z-10">
         <CardHeader className="space-y-5 pb-3">
-          <div className="mx-auto h-36 w-36 rounded-[2rem] bg-gradient-to-br from-[#fff4fb] to-[#eaf6ff] border border-border/70 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.55)] flex items-center justify-center overflow-hidden">
+          <div className="mx-auto h-36 w-36 rounded-[2rem] bg-white border border-border/70 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.55)] flex items-center justify-center overflow-hidden">
             <img src="/logo.png" alt="DentalFlow logo" className="h-28 w-28 object-contain" />
           </div>
           <div className="text-center space-y-1">
