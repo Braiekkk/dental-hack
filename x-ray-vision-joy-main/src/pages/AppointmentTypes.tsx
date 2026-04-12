@@ -34,7 +34,7 @@ interface SupplyRequirement {
   quantity: number | null;
 }
 
-const APPOINTMENT_TYPES_STORAGE_KEY = "viewr:appointment-types:v1";
+const APPOINTMENT_TYPES_STORAGE_KEY = "dentalflow:appointment-types:v1";
 
 const SUPPLY_OPTIONS = [
   "Mouth Mirror",
