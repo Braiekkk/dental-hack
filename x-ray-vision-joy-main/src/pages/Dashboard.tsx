@@ -12,10 +12,10 @@ const stats = [
 ];
 
 const todayAppointments = [
-  { time: "09:00", patient: "Sarah Johnson", type: "Routine check-up (examination)", status: "completed" },
-  { time: "10:30", patient: "Ahmed Ben Ali", type: "Emergency visit (pain/infection)", status: "in-progress" },
-  { time: "11:30", patient: "Marie Dupont", type: "Dental cleaning (scaling)", status: "upcoming" },
-  { time: "14:00", patient: "Youssef Trabelsi", type: "Filling (cavity treatment)", status: "upcoming" },
+  { time: "09:00", patient: "Sarah Johnson", type: "Routine check-up", status: "completed" },
+  { time: "10:30", patient: "Ahmed Ben Ali", type: "Emergency visit", status: "in-progress" },
+  { time: "11:30", patient: "Marie Dupont", type: "Dental cleaning", status: "upcoming" },
+  { time: "14:00", patient: "Youssef Trabelsi", type: "Filling", status: "upcoming" },
   { time: "15:30", patient: "Fatma Khelifi", type: "Tooth extraction", status: "upcoming" },
 ];
 
