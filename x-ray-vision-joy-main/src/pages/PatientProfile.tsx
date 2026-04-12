@@ -87,10 +87,10 @@ const mockTeeth: Record<number, ToothData[]> = {
 };
 
 const mockVisits = [
-  { date: "2026-04-08", type: "Routine check-up (examination)", dentist: "Dr. Sridi", notes: "Routine exam. No new issues found.", actions: ["Examination", "Scaling"] },
-  { date: "2026-03-15", type: "Filling (cavity treatment)", dentist: "Dr. Sridi", notes: "Composite filling on tooth #14.", actions: ["Filling", "Local Anesthesia"] },
-  { date: "2026-02-20", type: "Dental cleaning (scaling)", dentist: "Dr. Sridi", notes: "Comprehensive cleaning session completed.", actions: ["Scaling", "Polishing"] },
-  { date: "2025-12-10", type: "Emergency visit (pain/infection)", dentist: "Dr. Sridi", notes: "Patient presented with acute pain on tooth #24.", actions: ["Emergency Exam", "Temporary Filling", "Prescription"] },
+  { date: "2026-04-08", type: "Routine check-up", dentist: "Dr. Sridi", notes: "Routine exam. No new issues found.", actions: ["Examination", "Scaling"] },
+  { date: "2026-03-15", type: "Filling", dentist: "Dr. Sridi", notes: "Composite filling on tooth #14.", actions: ["Filling", "Local Anesthesia"] },
+  { date: "2026-02-20", type: "Dental cleaning", dentist: "Dr. Sridi", notes: "Comprehensive cleaning session completed.", actions: ["Scaling", "Polishing"] },
+  { date: "2025-12-10", type: "Emergency visit", dentist: "Dr. Sridi", notes: "Patient presented with acute pain on tooth #24.", actions: ["Emergency Exam", "Temporary Filling", "Prescription"] },
   { date: "2025-11-01", type: "Tooth extraction", dentist: "Dr. Sridi", notes: "Extraction follow-up with normal healing.", actions: ["Examination"] },
 ];
 
@@ -103,10 +103,10 @@ const mockFiles = [
 ];
 
 const visitTypeColors: Record<string, string> = {
-  "Routine check-up (examination)": "bg-info/10 text-info border-info/20",
-  "Dental cleaning (scaling)": "bg-success/10 text-success border-success/20",
-  "Filling (cavity treatment)": "bg-primary/10 text-primary border-primary/20",
-  "Emergency visit (pain/infection)": "bg-destructive/10 text-destructive border-destructive/20",
+  "Routine check-up": "bg-info/10 text-info border-info/20",
+  "Dental cleaning": "bg-success/10 text-success border-success/20",
+  Filling: "bg-primary/10 text-primary border-primary/20",
+  "Emergency visit": "bg-destructive/10 text-destructive border-destructive/20",
   "Tooth extraction": "bg-muted text-muted-foreground border-border/70",
 };
 

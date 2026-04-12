@@ -62,22 +62,22 @@ interface AppointmentEvent {
 }
 
 const mockAppointments: Appointment[] = [
-  { id: 1, date: "2026-04-14", startTime: "09:00", endTime: "10:00", patient: "Sarah Johnson", type: "Routine check-up (examination)", notes: "" },
-  { id: 2, date: "2026-04-14", startTime: "10:30", endTime: "11:30", patient: "Ahmed Ben Ali", type: "Emergency visit (pain/infection)", notes: "Second session" },
-  { id: 3, date: "2026-04-15", startTime: "09:00", endTime: "10:00", patient: "Marie Dupont", type: "Dental cleaning (scaling)", notes: "" },
-  { id: 4, date: "2026-04-16", startTime: "14:00", endTime: "15:00", patient: "Youssef Trabelsi", type: "Filling (cavity treatment)", notes: "" },
-  { id: 5, date: "2026-04-16", startTime: "15:30", endTime: "16:30", patient: "Fatma Khelifi", type: "Filling (cavity treatment)", notes: "Tooth #24" },
+  { id: 1, date: "2026-04-14", startTime: "09:00", endTime: "10:00", patient: "Sarah Johnson", type: "Routine check-up", notes: "" },
+  { id: 2, date: "2026-04-14", startTime: "10:30", endTime: "11:30", patient: "Ahmed Ben Ali", type: "Emergency visit", notes: "Second session" },
+  { id: 3, date: "2026-04-15", startTime: "09:00", endTime: "10:00", patient: "Marie Dupont", type: "Dental cleaning", notes: "" },
+  { id: 4, date: "2026-04-16", startTime: "14:00", endTime: "15:00", patient: "Youssef Trabelsi", type: "Filling", notes: "" },
+  { id: 5, date: "2026-04-16", startTime: "15:30", endTime: "16:30", patient: "Fatma Khelifi", type: "Filling", notes: "Tooth #24" },
   { id: 6, date: "2026-04-17", startTime: "11:00", endTime: "12:00", patient: "Omar Mansouri", type: "Tooth extraction", notes: "" },
-  { id: 7, date: "2026-04-18", startTime: "09:00", endTime: "10:00", patient: "Sarah Johnson", type: "Routine check-up (examination)", notes: "" },
+  { id: 7, date: "2026-04-18", startTime: "09:00", endTime: "10:00", patient: "Sarah Johnson", type: "Routine check-up", notes: "" },
 ];
 
 const eventPastelColors = ["#e3f7ff", "#fef3c7", "#eceafe", "#fde2f3", "#dff6ff"];
 
 const appointmentTypeClass: Record<string, string> = {
-  "Routine check-up (examination)": "bg-info/20 text-info-foreground border-info/30",
-  "Dental cleaning (scaling)": "bg-success/20 text-success-foreground border-success/30",
-  "Filling (cavity treatment)": "bg-primary/25 text-primary-foreground border-primary/35",
-  "Emergency visit (pain/infection)": "bg-warning/25 text-warning-foreground border-warning/35",
+  "Routine check-up": "bg-info/20 text-info-foreground border-info/30",
+  "Dental cleaning": "bg-success/20 text-success-foreground border-success/30",
+  Filling: "bg-primary/25 text-primary-foreground border-primary/35",
+  "Emergency visit": "bg-warning/25 text-warning-foreground border-warning/35",
   "Tooth extraction": "bg-muted text-muted-foreground border-border/70",
 };
 

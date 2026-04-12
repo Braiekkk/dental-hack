@@ -19,6 +19,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Link } from "react-router-dom";
+import anestheticCartridgesImg from "@/assets/tools/Anesthetic Cartridges.png";
+import barrierFilmsImg from "@/assets/tools/Barrier Films.png";
+import dentalCompositeImg from "@/assets/tools/Dental Composite A2.png";
+import cottonRollsImg from "@/assets/tools/Dental Cotton Rolls.png";
+import dentalMirrorImg from "@/assets/tools/dental mirror.png";
+import dentalNeedlesImg from "@/assets/tools/Dental Needles.png";
+import faceMaskImg from "@/assets/tools/Face Mask.png";
+import glovesImg from "@/assets/tools/gloves.png";
+import orthodonticPlierImg from "@/assets/tools/Orthodontic Plier.png";
+import syringeImg from "@/assets/tools/Syringe.png";
 
 interface StockItem {
   id: number;
@@ -29,6 +39,36 @@ interface StockItem {
   category: string;
   image?: string;
 }
+
+const toolImages: Record<string, string> = {
+  "Mouth Mirror": dentalMirrorImg,
+  "Carvers Plastics": dentalCompositeImg,
+  Forceps: orthodonticPlierImg,
+  Syringes: syringeImg,
+  "Orthodontic Pliers": orthodonticPlierImg,
+  "Dental Cotton Rolls": cottonRollsImg,
+  "Face Mask": faceMaskImg,
+  Gloves: glovesImg,
+  "Barrier Films": barrierFilmsImg,
+  "Dental Needles": dentalNeedlesImg,
+  "Dental Composite A2": dentalCompositeImg,
+  "Anesthetic Cartridges": anestheticCartridgesImg,
+};
+
+const toolImageClassByName: Record<string, string> = {
+  "Mouth Mirror": "scale-[0.94]",
+  "Carvers Plastics": "scale-[0.9]",
+  Forceps: "scale-[0.9]",
+  Syringes: "scale-[0.76]",
+  "Orthodontic Pliers": "scale-[0.88]",
+  "Dental Cotton Rolls": "scale-[0.96]",
+  "Face Mask": "scale-[0.95]",
+  Gloves: "scale-[0.93]",
+  "Barrier Films": "scale-[0.92]",
+  "Dental Needles": "scale-[0.9]",
+  "Dental Composite A2": "scale-[0.95]",
+  "Anesthetic Cartridges": "scale-[0.9]",
+};
 
 const mockStock: StockItem[] = [
   { id: 1, name: "Mouth Mirror", remaining: 500, threshold: 50, expiration: "N/A", category: "Instruments" },
@@ -45,7 +85,21 @@ const mockStock: StockItem[] = [
   { id: 12, name: "Anesthetic Cartridges", remaining: 8, threshold: 20, expiration: "2026-12-30", category: "Medication" },
 ];
 
-function ItemPlaceholder({ name }: { name: string }) {
+function ItemPlaceholder({ name, image }: { name: string; image?: string }) {
+  if (image) {
+    const itemFitClass = toolImageClassByName[name] ?? "scale-[0.92]";
+    return (
+      <div className="h-24 w-full bg-muted/50 rounded-lg flex items-center justify-center overflow-hidden">
+        <img
+          src={image}
+          alt={name}
+          loading="lazy"
+          className={`h-full w-full object-contain transition-transform duration-200 ${itemFitClass}`}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="h-24 w-full bg-muted/50 rounded-lg flex items-center justify-center">
       <Package className="h-10 w-10 text-muted-foreground/40" />
@@ -174,7 +228,7 @@ export default function Stock() {
               <CardContent className="p-0">
                 {/* Image Placeholder */}
                 <div className="p-3 pb-0">
-                  <ItemPlaceholder name={item.name} />
+                  <ItemPlaceholder name={item.name} image={toolImages[item.name]} />
                 </div>
                 
                 {/* Content */}

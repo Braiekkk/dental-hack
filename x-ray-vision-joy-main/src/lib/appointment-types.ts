@@ -1,22 +1,22 @@
 export const APPOINTMENT_TYPES = [
   {
     id: "routine-checkup",
-    name: "Routine check-up (examination)",
+    name: "Routine check-up",
     description: "Clinical examination and preventive assessment.",
   },
   {
     id: "dental-cleaning",
-    name: "Dental cleaning (scaling)",
+    name: "Dental cleaning",
     description: "Plaque and tartar removal with polishing.",
   },
   {
     id: "filling",
-    name: "Filling (cavity treatment)",
+    name: "Filling",
     description: "Restoration of carious teeth with filling material.",
   },
   {
     id: "emergency-visit",
-    name: "Emergency visit (pain/infection)",
+    name: "Emergency visit",
     description: "Urgent pain, swelling, or infection treatment.",
   },
   {
