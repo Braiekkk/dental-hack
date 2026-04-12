@@ -2,7 +2,6 @@ import {
   LayoutDashboard,
   Users,
   CalendarDays,
-  ScanLine,
   Package,
   Truck,
   Tags,
@@ -29,7 +28,6 @@ const mainNav = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Patients", url: "/patients", icon: Users },
   { title: "Appointments", url: "/appointments", icon: CalendarDays },
-  { title: "X-Ray Analysis", url: "/xray", icon: ScanLine },
 ];
 
 const managementNav = [
@@ -63,7 +61,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" className="border-r border-sidebar-border/70 bg-sidebar/90">
       <SidebarHeader className="p-4 pt-5">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#ffe8f3] to-[#dff4ff] border border-sidebar-border/70 flex items-center justify-center shrink-0 overflow-hidden">
+          <div className="h-10 w-10 rounded-xl bg-white border border-sidebar-border/70 flex items-center justify-center shrink-0 overflow-hidden">
             <img src="/logo.png" alt="DentalFlow logo" className="h-8 w-8 object-contain" />
           </div>
           {!collapsed && (
