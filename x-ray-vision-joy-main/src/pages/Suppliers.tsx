@@ -57,23 +57,22 @@ export default function Suppliers() {
             <h1 className="page-title">Supplier Network</h1>
             <p className="page-subtitle">Manage procurement relationships and billing history.</p>
           </div>
-          <span className="ribbon-chip w-fit">Procurement hub</span>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button><Plus className="mr-2 h-4 w-4" /> Add Supplier</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="font-display">New Supplier</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div><Label>Supplier Name</Label><Input placeholder="Company name" className="mt-1.5" /></div>
+                <div><Label>Phone</Label><Input placeholder="+216..." className="mt-1.5" /></div>
+                <Button className="w-full mt-2">Add Supplier</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button><Plus className="mr-2 h-4 w-4" /> Add Supplier</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle className="font-display">New Supplier</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div><Label>Supplier Name</Label><Input placeholder="Company name" className="mt-1.5" /></div>
-              <div><Label>Phone</Label><Input placeholder="+216..." className="mt-1.5" /></div>
-              <Button className="w-full mt-2">Add Supplier</Button>
-            </div>
-          </DialogContent>
-        </Dialog>
       </div>
 
       <Card className="soft-panel overflow-hidden">
@@ -96,7 +95,7 @@ export default function Suppliers() {
                 <TableHead>Phone</TableHead>
                 <TableHead>Total Bills</TableHead>
                 <TableHead>Last Order</TableHead>
-                <TableHead className="w-10"></TableHead>
+                <TableHead className="w-10 text-right pr-4"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -117,19 +116,21 @@ export default function Suppliers() {
                   <TableCell className="text-muted-foreground">
                     {new Date(supplier.lastOrder).toLocaleDateString()}
                   </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View Bills</DropdownMenuItem>
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                  <TableCell className="text-right pr-4">
+                    <div className="flex justify-end">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem>View Bills</DropdownMenuItem>
+                          <DropdownMenuItem>Edit</DropdownMenuItem>
+                          <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
