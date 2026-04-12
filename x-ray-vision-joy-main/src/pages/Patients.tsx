@@ -40,33 +40,37 @@ export default function Patients() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-2xl font-bold">Patients</h1>
-          <p className="text-muted-foreground text-sm mt-1">{mockPatients.length} patients registered</p>
+      <div className="soft-panel p-6 sm:p-7 relative overflow-hidden">
+        <div className="absolute -top-14 -right-12 h-40 w-40 rounded-full bg-[#e8f4ff] blur-3xl" />
+        <div className="absolute -bottom-12 left-6 h-28 w-28 rounded-full bg-[#ffe8f4] blur-2xl" />
+        <div className="relative flex items-end justify-between gap-4">
+          <div>
+            <h1 className="page-title">Patient Registry</h1>
+            <p className="page-subtitle">{mockPatients.length} active records, with chart-linked medical history.</p>
+          </div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="shrink-0"><Plus className="mr-2 h-4 w-4" /> Add Patient</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="font-display">New Patient</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div><Label>Full Name</Label><Input placeholder="Enter name" className="mt-1.5" /></div>
+                  <div><Label>Phone</Label><Input placeholder="+216..." className="mt-1.5" /></div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><Label>City</Label><Input placeholder="City" className="mt-1.5" /></div>
+                  <div><Label>Date of Birth</Label><Input type="date" className="mt-1.5" /></div>
+                </div>
+                <div><Label>Description</Label><Input placeholder="Notes..." className="mt-1.5" /></div>
+                <Button className="w-full mt-2">Create Patient</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button><Plus className="mr-2 h-4 w-4" /> Add Patient</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle className="font-display">New Patient</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div><Label>Full Name</Label><Input placeholder="Enter name" className="mt-1.5" /></div>
-                <div><Label>Phone</Label><Input placeholder="+216..." className="mt-1.5" /></div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div><Label>City</Label><Input placeholder="City" className="mt-1.5" /></div>
-                <div><Label>Date of Birth</Label><Input type="date" className="mt-1.5" /></div>
-              </div>
-              <div><Label>Description</Label><Input placeholder="Notes..." className="mt-1.5" /></div>
-              <Button className="w-full mt-2">Create Patient</Button>
-            </div>
-          </DialogContent>
-        </Dialog>
       </div>
 
       <div className="relative max-w-sm">
@@ -75,18 +79,18 @@ export default function Patients() {
           placeholder="Search patients..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-9"
+          className="pl-9 bg-white/80"
         />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {filtered.map((patient) => (
           <Link key={patient.id} to={`/patients/${patient.id}`} className="block">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer hover:border-primary/30">
+            <Card className="hover:shadow-md transition-all cursor-pointer hover:border-primary/40 hover:-translate-y-0.5">
               <CardContent className="p-5">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center font-display font-bold text-primary">
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#ffeef7] to-[#e9f6ff] border border-border/70 flex items-center justify-center font-display font-bold text-primary">
                       {patient.name.split(" ").map((n) => n[0]).join("")}
                     </div>
                     <div>

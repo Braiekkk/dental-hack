@@ -83,20 +83,22 @@ export default function Stock() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-2xl font-bold">Inventory</h1>
-          <p className="text-muted-foreground text-sm mt-1">Manage supplies and materials</p>
-        </div>
-        <div className="flex items-center gap-3">
+      <div className="soft-panel p-6 sm:p-7 relative overflow-hidden">
+        <div className="absolute -top-16 -right-12 h-44 w-44 rounded-full bg-[#fff0da] blur-3xl" />
+        <div className="absolute -bottom-14 left-8 h-32 w-32 rounded-full bg-[#e9f4ff] blur-3xl" />
+        <div className="relative flex flex-col xl:flex-row xl:items-end xl:justify-between gap-4">
+          <div>
+            <h1 className="page-title">Inventory Atlas</h1>
+            <p className="page-subtitle">Track instruments, supplies, and expiration risk at a glance.</p>
+          </div>
+          <div className="flex items-center gap-3 flex-wrap">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search items..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 w-64"
+              className="pl-9 w-64 bg-white/85"
             />
           </div>
           <Link to="/suppliers">
@@ -124,10 +126,10 @@ export default function Stock() {
               </div>
             </DialogContent>
           </Dialog>
+          </div>
         </div>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
@@ -164,12 +166,11 @@ export default function Stock() {
         </Card>
       </div>
 
-      {/* Inventory Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
         {filtered.map((item) => {
           const status = getItemStatus(item);
           return (
-            <Card key={item.id} className="overflow-hidden border-2 border-primary/20 hover:border-primary/40 transition-colors">
+            <Card key={item.id} className="overflow-hidden border-2 border-primary/15 hover:border-primary/35 transition-all hover:-translate-y-0.5">
               <CardContent className="p-0">
                 {/* Image Placeholder */}
                 <div className="p-3 pb-0">

@@ -10,6 +10,7 @@ import Appointments from "./pages/Appointments";
 import XRayAnalysis from "./pages/XRayAnalysis";
 import Stock from "./pages/Stock";
 import Suppliers from "./pages/Suppliers";
+import AppointmentTypes from "./pages/AppointmentTypes";
 import PatientProfile from "./pages/PatientProfile";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
@@ -33,6 +34,7 @@ const App = () => (
                   <Route path="/patients" element={<Patients />} />
                   <Route path="/patients/:id" element={<PatientProfile />} />
                   <Route path="/appointments" element={<Appointments />} />
+                  <Route path="/appointment-types" element={<AppointmentTypes />} />
                   <Route path="/xray" element={<XRayAnalysis />} />
                   <Route path="/stock" element={<Stock />} />
                   <Route path="/suppliers" element={<Suppliers />} />

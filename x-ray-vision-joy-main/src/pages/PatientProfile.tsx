@@ -87,11 +87,11 @@ const mockTeeth: Record<number, ToothData[]> = {
 };
 
 const mockVisits = [
-  { date: "2026-04-08", type: "Checkup", dentist: "Dr. Sridi", notes: "Routine exam. No new issues found.", actions: ["Examination", "Scaling"] },
-  { date: "2026-03-15", type: "Treatment", dentist: "Dr. Sridi", notes: "Composite filling on tooth #14.", actions: ["Filling", "Local Anesthesia"] },
-  { date: "2026-02-20", type: "X-Ray", dentist: "Dr. Sridi", notes: "Panoramic X-ray taken. AI analysis performed.", actions: ["Panoramic X-Ray", "AI Analysis"] },
-  { date: "2025-12-10", type: "Emergency", dentist: "Dr. Sridi", notes: "Patient presented with acute pain on tooth #24.", actions: ["Emergency Exam", "Temporary Filling", "Prescription"] },
-  { date: "2025-11-01", type: "Checkup", dentist: "Dr. Sridi", notes: "Crown placement follow-up.", actions: ["Examination"] },
+  { date: "2026-04-08", type: "Routine check-up (examination)", dentist: "Dr. Sridi", notes: "Routine exam. No new issues found.", actions: ["Examination", "Scaling"] },
+  { date: "2026-03-15", type: "Filling (cavity treatment)", dentist: "Dr. Sridi", notes: "Composite filling on tooth #14.", actions: ["Filling", "Local Anesthesia"] },
+  { date: "2026-02-20", type: "Dental cleaning (scaling)", dentist: "Dr. Sridi", notes: "Comprehensive cleaning session completed.", actions: ["Scaling", "Polishing"] },
+  { date: "2025-12-10", type: "Emergency visit (pain/infection)", dentist: "Dr. Sridi", notes: "Patient presented with acute pain on tooth #24.", actions: ["Emergency Exam", "Temporary Filling", "Prescription"] },
+  { date: "2025-11-01", type: "Tooth extraction", dentist: "Dr. Sridi", notes: "Extraction follow-up with normal healing.", actions: ["Examination"] },
 ];
 
 const mockFiles = [
@@ -103,10 +103,11 @@ const mockFiles = [
 ];
 
 const visitTypeColors: Record<string, string> = {
-  Checkup: "bg-success/10 text-success border-success/20",
-  Treatment: "bg-primary/10 text-primary border-primary/20",
-  "X-Ray": "bg-info/10 text-info border-info/20",
-  Emergency: "bg-destructive/10 text-destructive border-destructive/20",
+  "Routine check-up (examination)": "bg-info/10 text-info border-info/20",
+  "Dental cleaning (scaling)": "bg-success/10 text-success border-success/20",
+  "Filling (cavity treatment)": "bg-primary/10 text-primary border-primary/20",
+  "Emergency visit (pain/infection)": "bg-destructive/10 text-destructive border-destructive/20",
+  "Tooth extraction": "bg-muted text-muted-foreground border-border/70",
 };
 
 const fileTypeColors: Record<string, string> = {
@@ -137,37 +138,40 @@ export default function PatientProfile() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" asChild>
-          <Link to="/patients"><ArrowLeft className="h-5 w-5" /></Link>
-        </Button>
-        <div className="flex-1">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center font-display font-bold text-primary text-lg">
-              {patient.name.split(" ").map((n: string) => n[0]).join("")}
-            </div>
-            <div>
-              <h1 className="font-display text-2xl font-bold">{patient.name}</h1>
-              <p className="text-sm text-muted-foreground">{age} years old · Patient since {new Date(patient.createdAt).toLocaleDateString()}</p>
+      <div className="soft-panel p-5 sm:p-6 relative overflow-hidden">
+        <div className="absolute -top-16 right-4 h-40 w-40 rounded-full bg-[#e8f4ff] blur-3xl" />
+        <div className="absolute -bottom-14 left-8 h-32 w-32 rounded-full bg-[#ffe9f5] blur-3xl" />
+        <div className="relative flex items-center gap-4">
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/patients"><ArrowLeft className="h-5 w-5" /></Link>
+          </Button>
+          <div className="flex-1">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[#ffeef7] to-[#e9f6ff] border border-border/70 flex items-center justify-center font-display font-bold text-primary text-lg">
+                {patient.name.split(" ").map((n: string) => n[0]).join("")}
+              </div>
+              <div>
+                <h1 className="page-title">{patient.name}</h1>
+                <p className="text-sm text-muted-foreground">{age} years old · Patient since {new Date(patient.createdAt).toLocaleDateString()}</p>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <Pencil className="mr-2 h-3.5 w-3.5" /> Edit
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>Schedule Appointment</DropdownMenuItem>
-              <DropdownMenuItem>Upload X-Ray</DropdownMenuItem>
-              <DropdownMenuItem>Export Records</DropdownMenuItem>
-              <DropdownMenuItem className="text-destructive"><Trash2 className="mr-2 h-4 w-4" /> Delete Patient</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm">
+              <Pencil className="mr-2 h-3.5 w-3.5" /> Edit
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>Schedule Appointment</DropdownMenuItem>
+                <DropdownMenuItem>Upload X-Ray</DropdownMenuItem>
+                <DropdownMenuItem>Export Records</DropdownMenuItem>
+                <DropdownMenuItem className="text-destructive"><Trash2 className="mr-2 h-4 w-4" /> Delete Patient</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
 

@@ -5,6 +5,7 @@ import {
   ScanLine,
   Package,
   Truck,
+  Tags,
   Settings,
   Sparkles,
 } from "lucide-react";
@@ -34,6 +35,7 @@ const mainNav = [
 const managementNav = [
   { title: "Stock", url: "/stock", icon: Package },
   { title: "Suppliers", url: "/suppliers", icon: Truck },
+  { title: "Appointment Types", url: "/appointment-types", icon: Tags },
 ];
 
 const activePastelClasses = [
