@@ -24,12 +24,12 @@ interface Patient {
 }
 
 const mockPatients: Patient[] = [
-  { id: 1, name: "Sarah Johnson", phone: "+216 55 123 456", city: "Sousse", dob: "1990-03-15", abnormalTeeth: 2, lastVisit: "2026-04-08" },
+  { id: 1, name: "Amina Ben Youssef", phone: "+216 55 123 456", city: "Sousse", dob: "1990-03-15", abnormalTeeth: 2, lastVisit: "2026-04-08" },
   { id: 2, name: "Ahmed Ben Ali", phone: "+216 22 789 012", city: "Tunis", dob: "1985-07-22", abnormalTeeth: 0, lastVisit: "2026-04-10" },
-  { id: 3, name: "Marie Dupont", phone: "+216 98 345 678", city: "Sfax", dob: "1992-11-03", abnormalTeeth: 3, lastVisit: "2026-04-05" },
+  { id: 3, name: "Mouna Triki", phone: "+216 98 345 678", city: "Sfax", dob: "1992-11-03", abnormalTeeth: 3, lastVisit: "2026-04-05" },
   { id: 4, name: "Youssef Trabelsi", phone: "+216 50 456 789", city: "Monastir", dob: "1978-01-19", abnormalTeeth: 1, lastVisit: "2026-03-28" },
   { id: 5, name: "Fatma Khelifi", phone: "+216 23 567 890", city: "Sousse", dob: "1995-09-11", abnormalTeeth: 0, lastVisit: "2026-04-11" },
-  { id: 6, name: "Omar Mansouri", phone: "+216 55 678 901", city: "Kairouan", dob: "1988-12-25", abnormalTeeth: 4, lastVisit: "2026-04-01" },
+  { id: 6, name: "Karim Mansouri", phone: "+216 55 678 901", city: "Kairouan", dob: "1988-12-25", abnormalTeeth: 4, lastVisit: "2026-04-01" },
 ];
 
 export default function Patients() {
@@ -125,11 +125,17 @@ export default function Patients() {
 
                 <div className="mt-4 flex items-center gap-2">
                   {patient.abnormalTeeth > 0 ? (
-                    <Badge variant="outline" className="bg-warning/10 text-warning border-warning/20">
+                    <Badge
+                      variant="outline"
+                      className="bg-warning/25 text-amber-900 border-amber-500/60 font-semibold shadow-sm"
+                    >
                       {patient.abnormalTeeth} anomalies
                     </Badge>
                   ) : (
-                    <Badge variant="outline" className="bg-success/10 text-success border-success/20">
+                    <Badge
+                      variant="outline"
+                      className="bg-emerald-100 text-emerald-900 border-emerald-500/60 font-semibold shadow-sm"
+                    >
                       Healthy
                     </Badge>
                   )}

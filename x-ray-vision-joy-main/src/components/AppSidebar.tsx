@@ -64,12 +64,12 @@ export function AppSidebar() {
       <SidebarHeader className="p-4 pt-5">
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#ffe8f3] to-[#dff4ff] border border-sidebar-border/70 flex items-center justify-center shrink-0 overflow-hidden">
-            <img src="/logo.png" alt="Viewr logo" className="h-8 w-8 object-contain" />
+            <img src="/logo.png" alt="DentalFlow logo" className="h-8 w-8 object-contain" />
           </div>
           {!collapsed && (
             <div>
               <h1 className="font-display text-lg font-semibold text-sidebar-foreground tracking-tight">
-                Viewr
+                DentalFlow
               </h1>
               <p className="text-xs text-sidebar-foreground/60">Dental Intelligence</p>
             </div>
