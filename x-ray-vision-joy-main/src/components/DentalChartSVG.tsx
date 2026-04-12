@@ -1,12 +1,6 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-
-export type ToothStatus = "healthy" | "cavity" | "fracture" | "missing" | "implant" | "crown" | "filling" | "impacted";
+import { TOOTH_STATUS_CLASSES, TOOTH_STATUS_META, type ToothStatus } from "@/lib/tooth-status";
 
 export interface ToothData {
   number: number;
@@ -20,17 +14,6 @@ interface DentalChartSVGProps {
   selectedTooth?: number | null;
   compact?: boolean;
 }
-
-const statusConfig: Record<ToothStatus, { fill: string; stroke: string; label: string }> = {
-  healthy: { fill: "#22c55e", stroke: "#16a34a", label: "Healthy" },
-  cavity: { fill: "#ef4444", stroke: "#dc2626", label: "Cavity" },
-  fracture: { fill: "#f59e0b", stroke: "#d97706", label: "Fracture" },
-  missing: { fill: "#e5e7eb", stroke: "#9ca3af", label: "Missing" },
-  implant: { fill: "#3b82f6", stroke: "#2563eb", label: "Implant" },
-  crown: { fill: "#06b6d4", stroke: "#0891b2", label: "Crown" },
-  filling: { fill: "#8b5cf6", stroke: "#7c3aed", label: "Filling" },
-  impacted: { fill: "#f97316", stroke: "#ea580c", label: "Impacted" },
-};
 
 // All FDI tooth numbers
 const allTeethNumbers = [
@@ -50,15 +33,15 @@ export function DentalChartSVG({ teeth, onToothClick, selectedTooth, compact = f
   const generateToothStyles = () => {
     return allTeethNumbers.map(num => {
       const tooth = getToothData(num);
-      const config = statusConfig[tooth.status];
+      const config = TOOTH_STATUS_META[tooth.status];
       const isSelected = selectedTooth === num;
       const isHovered = hoveredTooth === num;
       
       return `
         .tooth-${num}, .tooth-${num}-parent {
-          fill: ${tooth.status === "missing" ? "transparent" : config.fill};
+          fill: ${tooth.status === "missing_teeth" ? "transparent" : config.chartFill};
           fill-opacity: ${tooth.status === "healthy" ? "0.15" : "0.4"};
-          stroke: ${isSelected ? "hsl(var(--primary))" : config.stroke};
+          stroke: ${isSelected ? "#d316e4" : config.chartStroke};
           stroke-width: ${isSelected ? "2" : "1"};
           cursor: pointer;
           transition: all 0.2s ease;
@@ -94,21 +77,22 @@ export function DentalChartSVG({ teeth, onToothClick, selectedTooth, compact = f
     setHoveredTooth(null);
   };
 
+  const hoveredToothData = hoveredTooth ? getToothData(hoveredTooth) : null;
+
   return (
     <div className={cn("relative", compact ? "scale-90" : "")}>
       <style>{`
         ${generateToothStyles()}
         .tooth-label {
-          font-size: 8px;
+          font-size: 10px;
           font-weight: 600;
           fill: hsl(var(--foreground));
           text-anchor: middle;
           pointer-events: none;
         }
       `}</style>
-      
-      <Tooltip>
-        <TooltipTrigger asChild>
+      <div className="flex flex-col xl:flex-row-reverse items-start gap-4">
+        <div className="w-full xl:flex-1">
           <svg
             ref={svgRef}
             viewBox="0 0 289.61084 370.54398"
@@ -256,34 +240,38 @@ export function DentalChartSVG({ teeth, onToothClick, selectedTooth, compact = f
             <text x="144.8" y="365" className="tooth-label">Lower Arch (Mandibular)</text>
             <text x="144.8" y="185" className="tooth-label" style={{fontSize: '10px'}}>R ↔ L</text>
           </svg>
-        </TooltipTrigger>
-        <TooltipContent side="bottom" className="max-w-xs">
-          {hoveredTooth ? (
-            <div>
-              <p className="font-semibold">Tooth #{hoveredTooth}</p>
-              <p className="text-xs text-muted-foreground capitalize">
-                {getToothData(hoveredTooth).status}
-              </p>
-              {getToothData(hoveredTooth).notes && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  {getToothData(hoveredTooth).notes}
-                </p>
-              )}
-            </div>
-          ) : (
-            <p>Hover over teeth to see details</p>
-          )}
-        </TooltipContent>
-      </Tooltip>
 
-      {/* Legend */}
-      <div className="flex flex-wrap items-center justify-center gap-3 mt-4">
-        {Object.entries(statusConfig).map(([key, val]) => (
-          <div key={key} className="flex items-center gap-1.5">
-            <div className="h-3 w-3 rounded-full border" style={{ backgroundColor: val.fill, borderColor: val.stroke }} />
-            <span className="text-[10px] text-muted-foreground">{val.label}</span>
+          <div className="mx-auto mt-3 w-full max-w-lg rounded-lg border bg-accent/20 px-3 py-2 text-sm">
+            {hoveredToothData ? (
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-semibold">Tooth #{hoveredToothData.number}</span>
+                <span className="text-muted-foreground">{TOOTH_STATUS_META[hoveredToothData.status].label}</span>
+              </div>
+            ) : (
+              <span className="text-muted-foreground">Hover over a tooth to see its label.</span>
+            )}
           </div>
-        ))}
+        </div>
+
+        <div className="w-full xl:w-56 shrink-0">
+          <div className="rounded-lg border p-3">
+            <p className="text-sm font-semibold mb-2">Tooth Classes</p>
+            <div className="space-y-2">
+              {TOOTH_STATUS_CLASSES.map((statusKey) => {
+                const status = TOOTH_STATUS_META[statusKey];
+                return (
+                  <div key={statusKey} className="flex items-center gap-2">
+                    <div
+                      className="h-3.5 w-3.5 rounded-full border"
+                      style={{ backgroundColor: status.chartFill, borderColor: status.chartStroke }}
+                    />
+                    <span className="text-sm text-foreground/90">{status.label}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
