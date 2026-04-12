@@ -2,21 +2,26 @@ import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   ArrowLeft, Phone, MapPin, Calendar, FileText, Upload, Clock,
-  MoreHorizontal, Pencil, Trash2, Plus, User,
+  MoreHorizontal, Pencil, Trash2, Plus, User, Loader2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DentalChartSVG, ToothData, ToothStatus } from "@/components/DentalChartSVG";
+import { DentalChartSVG, ToothData } from "@/components/DentalChartSVG";
+import { TOOTH_STATUS_CLASSES, TOOTH_STATUS_META, type ToothStatus } from "@/lib/tooth-status";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { APPOINTMENT_TYPES } from "@/lib/appointment-types";
+import { analyzeDentalImage } from "@/lib/patient-status-api";
 
 // Mock patient data
 const mockPatientData = {
@@ -60,38 +65,47 @@ const mockPatientData = {
 
 const mockTeeth: Record<number, ToothData[]> = {
   1: [
-    { number: 14, status: "cavity", notes: "Mesial cavity, composite filling needed" },
+    { number: 14, status: "caries", notes: "Mesial caries, composite filling needed" },
     { number: 24, status: "filling", notes: "Composite filling placed 2025-12" },
     { number: 36, status: "crown", notes: "PFM crown, placed 2025-08" },
-    { number: 38, status: "missing", notes: "Extracted 2024-11" },
+    { number: 38, status: "missing_teeth", notes: "Extracted 2024-11" },
   ],
   2: [],
   3: [
-    { number: 11, status: "fracture", notes: "Enamel fracture, veneer recommended" },
-    { number: 21, status: "fracture", notes: "Crown fracture" },
-    { number: 46, status: "cavity", notes: "Large distal cavity" },
+    { number: 11, status: "root_piece", notes: "Root piece visible, evaluate restoration" },
+    { number: 21, status: "post_abutment", notes: "Post-abutment present" },
+    { number: 46, status: "caries", notes: "Large distal caries" },
   ],
   4: [
-    { number: 36, status: "impacted" },
+    { number: 36, status: "impacted_tooth" },
   ],
   5: [
-    { number: 38, status: "impacted", notes: "Monitoring — no symptoms" },
-    { number: 48, status: "impacted", notes: "Monitoring — mild discomfort" },
+    { number: 38, status: "impacted_tooth", notes: "Monitoring — no symptoms" },
+    { number: 48, status: "impacted_tooth", notes: "Monitoring — mild discomfort" },
   ],
   6: [
-    { number: 14, status: "cavity" },
-    { number: 15, status: "cavity" },
-    { number: 26, status: "missing" },
+    { number: 14, status: "caries" },
+    { number: 15, status: "caries" },
+    { number: 26, status: "missing_teeth" },
     { number: 46, status: "filling", notes: "Amalgam filling, needs replacement" },
   ],
 };
 
-const mockVisits = [
-  { date: "2026-04-08", type: "Routine check-up", dentist: "Dr. Sridi", notes: "Routine exam. No new issues found.", actions: ["Examination", "Scaling"] },
-  { date: "2026-03-15", type: "Filling", dentist: "Dr. Sridi", notes: "Composite filling on tooth #14.", actions: ["Filling", "Local Anesthesia"] },
-  { date: "2026-02-20", type: "Dental cleaning", dentist: "Dr. Sridi", notes: "Comprehensive cleaning session completed.", actions: ["Scaling", "Polishing"] },
-  { date: "2025-12-10", type: "Emergency visit", dentist: "Dr. Sridi", notes: "Patient presented with acute pain on tooth #24.", actions: ["Emergency Exam", "Temporary Filling", "Prescription"] },
-  { date: "2025-11-01", type: "Tooth extraction", dentist: "Dr. Sridi", notes: "Extraction follow-up with normal healing.", actions: ["Examination"] },
+interface VisitHistoryItem {
+  date: string;
+  time: string;
+  type: string;
+  description?: string;
+  attachments?: string[];
+  tags?: string[];
+}
+
+const mockVisits: VisitHistoryItem[] = [
+  { date: "2026-04-08", time: "09:30", type: "Routine check-up", description: "Routine exam. No new issues found." },
+  { date: "2026-03-15", time: "11:00", type: "Filling", description: "Composite filling on tooth #14." },
+  { date: "2026-02-20", time: "10:15", type: "Dental cleaning", description: "Comprehensive cleaning session completed." },
+  { date: "2025-12-10", time: "16:40", type: "Emergency visit", description: "Patient presented with acute pain on tooth #24." },
+  { date: "2025-11-01", time: "08:45", type: "Tooth extraction", description: "Extraction follow-up with normal healing." },
 ];
 
 const mockFiles = [
@@ -116,22 +130,259 @@ const fileTypeColors: Record<string, string> = {
   Document: "bg-muted text-muted-foreground",
 };
 
+const apiClassToToothStatus: Record<string, ToothStatus> = {
+  healthy: "healthy",
+  "bone loss": "bone_loss",
+  caries: "caries",
+  cavity: "caries",
+  crown: "crown",
+  filling: "filling",
+  "impacted tooth": "impacted_tooth",
+  implant: "implant",
+  "missing tooth": "missing_teeth",
+  "missing teeth": "missing_teeth",
+  missing: "missing_teeth",
+  extracted: "missing_teeth",
+  "periapical lesion": "periapical_lesion",
+  "post abutment": "post_abutment",
+  "root piece": "root_piece",
+  "root canal treatment": "root_canal_treatment",
+  rct: "root_canal_treatment",
+  endodontic: "root_canal_treatment",
+};
+
+const normalizeStatusFromApi = (value: string): ToothStatus | null => {
+  const normalized = value.trim().toLowerCase().replace(/[_-]/g, " ").replace(/\s+/g, " ");
+  return apiClassToToothStatus[normalized] ?? null;
+};
+
+const formatBytes = (bytes: number): string => {
+  if (bytes < 1024) return `${bytes} B`;
+  const kb = bytes / 1024;
+  if (kb < 1024) return `${kb.toFixed(1)} KB`;
+  return `${(kb / 1024).toFixed(1)} MB`;
+};
+
 export default function PatientProfile() {
   const { id } = useParams();
   const patientId = parseInt(id || "1");
   const patient = mockPatientData[patientId] || mockPatientData[1];
   const patientTeethRaw = mockTeeth[patientId] || [];
   const [selectedTooth, setSelectedTooth] = useState<number | null>(null);
+  const [medicalFiles, setMedicalFiles] = useState(mockFiles);
+  const [isUploadFileOpen, setIsUploadFileOpen] = useState(false);
+  const [fileDescription, setFileDescription] = useState("");
+  const [selectedMedicalFile, setSelectedMedicalFile] = useState<File | null>(null);
+  const [isAnalyzingFile, setIsAnalyzingFile] = useState(false);
+  const [uploadStatusMessage, setUploadStatusMessage] = useState<string | null>(null);
+  const [visits, setVisits] = useState<VisitHistoryItem[]>(mockVisits);
+  const [isAddVisitOpen, setIsAddVisitOpen] = useState(false);
+  const [isEditVisitOpen, setIsEditVisitOpen] = useState(false);
+  const [editingVisitIndex, setEditingVisitIndex] = useState<number | null>(null);
+  const [newVisit, setNewVisit] = useState<{
+    date: string;
+    time: string;
+    type: string;
+  }>({
+    date: new Date().toISOString().slice(0, 10),
+    time: "09:00",
+    type: APPOINTMENT_TYPES[0].name,
+  });
+  const [editVisit, setEditVisit] = useState<{
+    date: string;
+    time: string;
+    type: string;
+    description: string;
+    tagsText: string;
+    attachments: string[];
+  }>({
+    date: "",
+    time: "09:00",
+    type: APPOINTMENT_TYPES[0].name,
+    description: "",
+    tagsText: "",
+    attachments: [],
+  });
 
   // Build full 32 teeth array with statuses
   const allTeethNumbers = [
     18,17,16,15,14,13,12,11,21,22,23,24,25,26,27,28,
     38,37,36,35,34,33,32,31,41,42,43,44,45,46,47,48,
   ];
-  const teethData: ToothData[] = allTeethNumbers.map((num) => {
-    const found = patientTeethRaw.find((t) => t.number === num);
-    return found || { number: num, status: "healthy" as ToothStatus };
-  });
+  const [teethData, setTeethData] = useState<ToothData[]>(() =>
+    allTeethNumbers.map((num) => {
+      const found = patientTeethRaw.find((t) => t.number === num);
+      return found || { number: num, status: "healthy" as ToothStatus };
+    })
+  );
+
+  const handleToothStatusChange = (toothNumber: number, nextStatus: ToothStatus) => {
+    setTeethData((current) =>
+      current.map((tooth) =>
+        tooth.number === toothNumber ? { ...tooth, status: nextStatus } : tooth
+      )
+    );
+  };
+
+  const handleAddVisit = () => {
+    if (!newVisit.date || !newVisit.time || !newVisit.type) {
+      return;
+    }
+
+    const visitToAdd: VisitHistoryItem = {
+      date: newVisit.date,
+      time: newVisit.time,
+      type: newVisit.type,
+    };
+
+    setVisits((current) =>
+      [...current, visitToAdd].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    );
+
+    setIsAddVisitOpen(false);
+    setNewVisit({
+      date: new Date().toISOString().slice(0, 10),
+      time: "09:00",
+      type: APPOINTMENT_TYPES[0].name,
+    });
+  };
+
+  const getAddVisitDateTimeValue = () => {
+    if (!newVisit.date) return "";
+    return `${newVisit.date}T${newVisit.time || "09:00"}`;
+  };
+
+  const handleAddVisitDateTimeChange = (value: string) => {
+    if (!value) {
+      setNewVisit((current) => ({ ...current, date: "", time: "" }));
+      return;
+    }
+
+    const [date, time] = value.split("T");
+    setNewVisit((current) => ({
+      ...current,
+      date,
+      time: time?.slice(0, 5) || "09:00",
+    }));
+  };
+
+  const handleOpenEditVisit = (visit: VisitHistoryItem, index: number) => {
+    setEditingVisitIndex(index);
+    setEditVisit({
+      date: visit.date,
+      time: visit.time,
+      type: visit.type,
+      description: visit.description ?? "",
+      tagsText: (visit.tags ?? []).join(" "),
+      attachments: visit.attachments ?? [],
+    });
+    setIsEditVisitOpen(true);
+  };
+
+  const handleEditVisitFiles = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(event.target.files ?? []).map((file) => file.name);
+    if (selectedFiles.length === 0) return;
+
+    setEditVisit((current) => ({
+      ...current,
+      attachments: Array.from(new Set([...current.attachments, ...selectedFiles])),
+    }));
+  };
+
+  const handleRemoveEditAttachment = (fileName: string) => {
+    setEditVisit((current) => ({
+      ...current,
+      attachments: current.attachments.filter((attachment) => attachment !== fileName),
+    }));
+  };
+
+  const handleSaveEditedVisit = () => {
+    if (editingVisitIndex === null || !editVisit.date || !editVisit.time || !editVisit.type) {
+      return;
+    }
+
+    const parsedTags = editVisit.tagsText
+      .split(/\s+/)
+      .map((tag) => tag.trim())
+      .filter(Boolean);
+
+    const updatedVisit: VisitHistoryItem = {
+      date: editVisit.date,
+      time: editVisit.time,
+      type: editVisit.type,
+      description: editVisit.description.trim(),
+      attachments: editVisit.attachments,
+      tags: parsedTags,
+    };
+
+    setVisits((current) =>
+      current
+        .map((visit, index) => (index === editingVisitIndex ? updatedVisit : visit))
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    );
+
+    setIsEditVisitOpen(false);
+    setEditingVisitIndex(null);
+  };
+
+  const handleUploadAndAnalyzeMedicalFile = async () => {
+    if (!selectedMedicalFile) {
+      return;
+    }
+
+    setIsAnalyzingFile(true);
+    setUploadStatusMessage(null);
+
+    try {
+      const results = await analyzeDentalImage(selectedMedicalFile);
+
+      const findingsByTooth = new Map<number, ToothStatus>();
+      for (const item of results) {
+        const toothNumber = Number.parseInt(item.tooth_number, 10);
+        const status = normalizeStatusFromApi(item.class);
+        if (!Number.isInteger(toothNumber) || status === null) {
+          continue;
+        }
+        findingsByTooth.set(toothNumber, status);
+      }
+
+      if (findingsByTooth.size > 0) {
+        setTeethData((current) =>
+          current.map((tooth) => {
+            const nextStatus = findingsByTooth.get(tooth.number);
+            return nextStatus ? { ...tooth, status: nextStatus } : tooth;
+          })
+        );
+      }
+
+      const extension = selectedMedicalFile.name.split(".").pop()?.toLowerCase() ?? "";
+      const isXRayType = ["png", "jpg", "jpeg", "bmp", "dcm", "dicom", "webp"].includes(extension);
+
+      setMedicalFiles((current) => [
+        {
+          name: fileDescription.trim() || selectedMedicalFile.name,
+          type: isXRayType ? "X-Ray" : "Document",
+          date: new Date().toISOString().slice(0, 10),
+          size: formatBytes(selectedMedicalFile.size),
+        },
+        ...current,
+      ]);
+
+      const statusText = findingsByTooth.size > 0
+        ? `Analysis complete. Updated ${findingsByTooth.size} tooth status${findingsByTooth.size > 1 ? "es" : ""}.`
+        : "Analysis complete. No recognized tooth status updates in response.";
+
+      setUploadStatusMessage(statusText);
+      setFileDescription("");
+      setSelectedMedicalFile(null);
+      setIsUploadFileOpen(false);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "File analysis failed.";
+      setUploadStatusMessage(message);
+    } finally {
+      setIsAnalyzingFile(false);
+    }
+  };
 
   const age = new Date().getFullYear() - new Date(patient.dob).getFullYear();
   const anomalies = teethData.filter((t) => t.status !== "healthy");
@@ -247,7 +498,7 @@ export default function PatientProfile() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="font-display text-base">Interactive Dental Chart</CardTitle>
                   <div className="flex gap-2">
-                    <Badge variant="outline" className="bg-success/10 text-success border-success/20">
+                    <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-300">
                       {teethData.filter(t => t.status === "healthy").length} Healthy
                     </Badge>
                     <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20">
@@ -274,20 +525,29 @@ export default function PatientProfile() {
               <CardContent>
                 {selectedTooth ? (() => {
                   const tooth = teethData.find(t => t.number === selectedTooth)!;
-                  const config = {
-                    healthy: { label: "Healthy", badgeClass: "bg-success/10 text-success border-success/20" },
-                    cavity: { label: "Cavity", badgeClass: "bg-destructive/10 text-destructive border-destructive/20" },
-                    fracture: { label: "Fracture", badgeClass: "bg-warning/10 text-warning border-warning/20" },
-                    missing: { label: "Missing", badgeClass: "bg-muted text-muted-foreground" },
-                    implant: { label: "Implant", badgeClass: "bg-info/10 text-info border-info/20" },
-                    crown: { label: "Crown", badgeClass: "bg-primary/10 text-primary border-primary/20" },
-                    filling: { label: "Filling", badgeClass: "bg-accent text-accent-foreground" },
-                    impacted: { label: "Impacted", badgeClass: "bg-warning/10 text-warning border-warning/20" },
-                  }[tooth.status];
+                  const statusMeta = TOOTH_STATUS_META[tooth.status];
                   return (
                     <div className="space-y-4">
                       <div className="flex items-center gap-2">
-                        <Badge variant="outline" className={config.badgeClass}>{config.label}</Badge>
+                        <Badge variant="outline" className={statusMeta.badgeClass}>{statusMeta.label}</Badge>
+                      </div>
+                      <div>
+                        <Label htmlFor="tooth-status" className="text-xs text-muted-foreground">Status Class</Label>
+                        <Select
+                          value={tooth.status}
+                          onValueChange={(value) => handleToothStatusChange(tooth.number, value as ToothStatus)}
+                        >
+                          <SelectTrigger id="tooth-status" className="mt-1.5">
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {TOOTH_STATUS_CLASSES.map((status) => (
+                              <SelectItem key={status} value={status}>
+                                {TOOTH_STATUS_META[status].label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                       {tooth.notes && (
                         <div>
@@ -316,17 +576,164 @@ export default function PatientProfile() {
         </TabsContent>
 
         <TabsContent value="visits">
+          <Dialog open={isEditVisitOpen} onOpenChange={setIsEditVisitOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="font-display">Edit Appointment</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-2">
+                <div>
+                  <Label htmlFor="edit-visit-date">Visit Date</Label>
+                  <Input
+                    id="edit-visit-date"
+                    type="date"
+                    className="mt-1.5"
+                    value={editVisit.date}
+                    onChange={(e) => setEditVisit((current) => ({ ...current, date: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-visit-time">Visit Time</Label>
+                  <Input
+                    id="edit-visit-time"
+                    type="time"
+                    className="mt-1.5"
+                    value={editVisit.time}
+                    onChange={(e) => setEditVisit((current) => ({ ...current, time: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-visit-type">Visit Type</Label>
+                  <Select
+                    value={editVisit.type}
+                    onValueChange={(value) => setEditVisit((current) => ({ ...current, type: value }))}
+                  >
+                    <SelectTrigger id="edit-visit-type" className="mt-1.5">
+                      <SelectValue placeholder="Select visit type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {APPOINTMENT_TYPES.map((appointmentType) => (
+                        <SelectItem key={appointmentType.id} value={appointmentType.name}>
+                          {appointmentType.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="edit-visit-description">Description</Label>
+                  <Textarea
+                    id="edit-visit-description"
+                    className="mt-1.5 min-h-24"
+                    placeholder="Appointment details..."
+                    value={editVisit.description}
+                    onChange={(e) => setEditVisit((current) => ({ ...current, description: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-visit-tags">Tags (space separated)</Label>
+                  <Input
+                    id="edit-visit-tags"
+                    className="mt-1.5"
+                    placeholder="urgent followup xrays"
+                    value={editVisit.tagsText}
+                    onChange={(e) => setEditVisit((current) => ({ ...current, tagsText: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-visit-files">Upload Files</Label>
+                  <Input
+                    id="edit-visit-files"
+                    type="file"
+                    className="mt-1.5"
+                    multiple
+                    onChange={handleEditVisitFiles}
+                  />
+                  {editVisit.attachments.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {editVisit.attachments.map((fileName) => (
+                        <Badge key={fileName} variant="outline" className="gap-2 pr-1">
+                          <span className="max-w-40 truncate">{fileName}</span>
+                          <button
+                            type="button"
+                            className="rounded px-1 text-muted-foreground hover:bg-accent"
+                            onClick={() => handleRemoveEditAttachment(fileName)}
+                          >
+                            ×
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <Button
+                  className="w-full"
+                  onClick={handleSaveEditedVisit}
+                  disabled={!editVisit.date || !editVisit.time || !editVisit.type}
+                >
+                  Save Changes
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-3">
               <CardTitle className="font-display text-base">Visit History</CardTitle>
-              <Button size="sm"><Plus className="mr-2 h-3.5 w-3.5" /> Add Visit</Button>
+              <Dialog open={isAddVisitOpen} onOpenChange={setIsAddVisitOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm"><Plus className="mr-2 h-3.5 w-3.5" /> Add Visit</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle className="font-display">Add Visit History</DialogTitle>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-2">
+                    <div>
+                      <Label htmlFor="visit-date-time">Visit Date & Time</Label>
+                      <Input
+                        id="visit-date-time"
+                        type="datetime-local"
+                        className="mt-1.5"
+                        value={getAddVisitDateTimeValue()}
+                        onChange={(e) => handleAddVisitDateTimeChange(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="visit-type">Visit Type</Label>
+                      <Select
+                        value={newVisit.type}
+                        onValueChange={(value) => setNewVisit((current) => ({ ...current, type: value }))}
+                      >
+                        <SelectTrigger id="visit-type" className="mt-1.5">
+                          <SelectValue placeholder="Select visit type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {APPOINTMENT_TYPES.map((appointmentType) => (
+                            <SelectItem key={appointmentType.id} value={appointmentType.name}>
+                              {appointmentType.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Button
+                      className="w-full"
+                      onClick={handleAddVisit}
+                      disabled={!newVisit.date || !newVisit.time || !newVisit.type}
+                    >
+                      Add To History
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </CardHeader>
             <CardContent className="space-y-3">
-              {mockVisits.map((visit, i) => (
+              {visits.map((visit, i) => (
                 <div key={i} className="p-4 rounded-lg border hover:bg-accent/30 transition-colors">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground w-24 shrink-0">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground w-28 shrink-0">
                         <Clock className="h-3.5 w-3.5" />
                         {new Date(visit.date).toLocaleDateString()}
                       </div>
@@ -335,16 +742,35 @@ export default function PatientProfile() {
                           <Badge variant="outline" className={visitTypeColors[visit.type] || "bg-muted text-muted-foreground"}>
                             {visit.type}
                           </Badge>
-                          <span className="text-xs text-muted-foreground">{visit.dentist}</span>
                         </div>
-                        <p className="text-sm mt-1">{visit.notes}</p>
-                        <div className="flex flex-wrap gap-1.5 mt-2">
-                          {visit.actions.map((action, j) => (
-                            <Badge key={j} variant="secondary" className="text-[10px]">{action}</Badge>
-                          ))}
-                        </div>
+                        {visit.description && <p className="text-sm mt-1">{visit.description}</p>}
+                        {visit.attachments && visit.attachments.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mt-2">
+                            {visit.attachments.map((fileName) => (
+                              <Badge key={fileName} variant="outline" className="text-[10px]">
+                                <FileText className="mr-1 h-3 w-3" />
+                                {fileName}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                        {visit.tags && visit.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mt-2">
+                            {visit.tags.map((tag) => (
+                              <Badge key={tag} variant="secondary" className="text-[10px]">#{tag}</Badge>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 px-2 shrink-0"
+                      onClick={() => handleOpenEditVisit(visit, i)}
+                    >
+                      <Pencil className="mr-1 h-3.5 w-3.5" /> Edit
+                    </Button>
                   </div>
                 </div>
               ))}
@@ -356,7 +782,7 @@ export default function PatientProfile() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-3">
               <CardTitle className="font-display text-base">Medical Files</CardTitle>
-              <Dialog>
+              <Dialog open={isUploadFileOpen} onOpenChange={setIsUploadFileOpen}>
                 <DialogTrigger asChild>
                   <Button size="sm"><Upload className="mr-2 h-3.5 w-3.5" /> Upload File</Button>
                 </DialogTrigger>
@@ -365,20 +791,74 @@ export default function PatientProfile() {
                     <DialogTitle className="font-display">Upload Medical File</DialogTitle>
                   </DialogHeader>
                   <div className="grid gap-4 py-4">
-                    <div><Label>File Name</Label><Input placeholder="File description..." className="mt-1.5" /></div>
-                    <div className="border-2 border-dashed rounded-lg p-8 text-center">
-                      <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                      <p className="text-sm text-muted-foreground">Drag & drop or click to browse</p>
-                      <p className="text-xs text-muted-foreground mt-1">PDF, DICOM, JPG, PNG — Max 50MB</p>
+                    <div>
+                      <Label htmlFor="medical-file-name">File Name</Label>
+                      <Input
+                        id="medical-file-name"
+                        placeholder="File description..."
+                        className="mt-1.5"
+                        value={fileDescription}
+                        onChange={(e) => setFileDescription(e.target.value)}
+                      />
                     </div>
-                    <Button className="w-full">Upload</Button>
+                    <div className="border-2 border-dashed rounded-lg p-6 text-center space-y-3">
+                      {isAnalyzingFile ? (
+                        <Loader2 className="h-8 w-8 mx-auto text-muted-foreground animate-spin" />
+                      ) : (
+                        <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
+                      )}
+                      <div>
+                        <Label htmlFor="medical-file-input" className="text-sm">Select file to analyze</Label>
+                        <Input
+                          id="medical-file-input"
+                          type="file"
+                          className="mt-1.5"
+                          accept=".dcm,.dicom,.png,.jpg,.jpeg,.bmp,.webp"
+                          disabled={isAnalyzingFile}
+                          onChange={(e) => setSelectedMedicalFile(e.target.files?.[0] ?? null)}
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {isAnalyzingFile
+                          ? "Uploading and processing patient status..."
+                          : "The uploaded image is sent to the AI API and tooth statuses are updated automatically."}
+                      </p>
+                      {selectedMedicalFile && (
+                        <p className="text-xs text-foreground">Selected: {selectedMedicalFile.name}</p>
+                      )}
+                    </div>
+                    <Button
+                      className="w-full"
+                      onClick={handleUploadAndAnalyzeMedicalFile}
+                      disabled={!selectedMedicalFile || isAnalyzingFile}
+                    >
+                      {isAnalyzingFile ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Uploading and Processing...
+                        </>
+                      ) : (
+                        "Upload And Analyze"
+                      )}
+                    </Button>
                   </div>
                 </DialogContent>
               </Dialog>
             </CardHeader>
             <CardContent>
+              {isAnalyzingFile && (
+                <div className="mb-3 rounded-md border bg-accent/30 px-3 py-2 text-sm flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Processing uploaded file and extracting tooth statuses...
+                </div>
+              )}
+              {uploadStatusMessage && (
+                <div className="mb-3 rounded-md border bg-accent/40 px-3 py-2 text-sm">
+                  {uploadStatusMessage}
+                </div>
+              )}
               <div className="space-y-2">
-                {mockFiles.map((file, i) => (
+                {medicalFiles.map((file, i) => (
                   <div key={i} className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/30 transition-colors">
                     <div className="flex items-center gap-3">
                       <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center">

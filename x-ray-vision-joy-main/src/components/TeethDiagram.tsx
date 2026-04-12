@@ -5,8 +5,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
-export type ToothStatus = "healthy" | "cavity" | "fracture" | "missing" | "implant" | "crown" | "filling" | "impacted";
+import { TOOTH_STATUS_CLASSES, TOOTH_STATUS_META, type ToothStatus } from "@/lib/tooth-status";
 
 export interface ToothData {
   number: number;
@@ -20,17 +19,6 @@ interface TeethDiagramProps {
   selectedTooth?: number | null;
   compact?: boolean;
 }
-
-const statusConfig: Record<ToothStatus, { color: string; label: string }> = {
-  healthy: { color: "bg-success/80 border-success", label: "Healthy" },
-  cavity: { color: "bg-destructive/80 border-destructive", label: "Cavity" },
-  fracture: { color: "bg-warning/80 border-warning", label: "Fracture" },
-  missing: { color: "bg-muted border-border", label: "Missing" },
-  implant: { color: "bg-info/80 border-info", label: "Implant" },
-  crown: { color: "bg-primary/80 border-primary", label: "Crown" },
-  filling: { color: "bg-accent border-accent-foreground", label: "Filling" },
-  impacted: { color: "bg-warning/60 border-warning", label: "Impacted" },
-};
 
 // FDI notation: upper right (18-11), upper left (21-28), lower left (38-31), lower right (41-48)
 const upperRight = [18, 17, 16, 15, 14, 13, 12, 11];
@@ -52,7 +40,7 @@ function ToothIcon({ number, status, className }: { number: number; status: Toot
   else if (isCanine) { width = 18; height = 30; }
   else { width = 16; height = 26; }
 
-  if (status === "missing") {
+  if (status === "missing_teeth") {
     return (
       <svg viewBox={`0 0 ${width} ${height}`} className={cn("opacity-30", className)} width={width} height={height}>
         <rect x="2" y="2" width={width - 4} height={height - 4} rx="3" fill="currentColor" opacity="0.2" stroke="currentColor" strokeWidth="1" strokeDasharray="2,2" />
@@ -102,7 +90,7 @@ export function TeethDiagram({ teeth, onToothClick, selectedTooth, compact = fal
 
   const renderTooth = (num: number) => {
     const tooth = getToothData(num);
-    const config = statusConfig[tooth.status];
+    const statusMeta = TOOTH_STATUS_META[tooth.status];
     const isSelected = selectedTooth === num;
 
     return (
@@ -118,31 +106,18 @@ export function TeethDiagram({ teeth, onToothClick, selectedTooth, compact = fal
           >
             <span className={cn(
               "text-[9px] font-display font-bold",
-              tooth.status === "healthy" ? "text-success" :
-              tooth.status === "missing" ? "text-muted-foreground" :
-              tooth.status === "cavity" ? "text-destructive" :
-              tooth.status === "fracture" ? "text-warning" :
-              tooth.status === "impacted" ? "text-warning" :
-              "text-primary"
+              statusMeta.textClass
             )}>
               {num}
             </span>
-            <div className={cn(
-              tooth.status === "healthy" ? "text-success" :
-              tooth.status === "missing" ? "text-muted-foreground" :
-              tooth.status === "cavity" ? "text-destructive" :
-              tooth.status === "fracture" ? "text-warning" :
-              tooth.status === "impacted" ? "text-warning" :
-              tooth.status === "implant" ? "text-info" :
-              "text-primary"
-            )}>
+            <div className={statusMeta.textClass}>
               <ToothIcon number={num} status={tooth.status} />
             </div>
           </button>
         </TooltipTrigger>
         <TooltipContent side="bottom" className="text-xs">
           <p className="font-semibold">Tooth #{num}</p>
-          <p className="capitalize">{config.label}</p>
+          <p>{statusMeta.label}</p>
           {tooth.notes && <p className="text-muted-foreground mt-0.5">{tooth.notes}</p>}
         </TooltipContent>
       </Tooltip>
@@ -186,10 +161,10 @@ export function TeethDiagram({ teeth, onToothClick, selectedTooth, compact = fal
 
       {/* Legend */}
       <div className="flex flex-wrap items-center justify-center gap-3 mt-3">
-        {Object.entries(statusConfig).map(([key, val]) => (
-          <div key={key} className="flex items-center gap-1.5">
-            <div className={cn("h-2.5 w-2.5 rounded-full border", val.color)} />
-            <span className="text-[10px] text-muted-foreground">{val.label}</span>
+        {TOOTH_STATUS_CLASSES.map((statusKey) => (
+          <div key={statusKey} className="flex items-center gap-1.5">
+            <div className={cn("h-2.5 w-2.5 rounded-full border", TOOTH_STATUS_META[statusKey].compactLegendClass)} />
+            <span className="text-[10px] text-muted-foreground">{TOOTH_STATUS_META[statusKey].label}</span>
           </div>
         ))}
       </div>
