@@ -6,6 +6,7 @@ import {
   Package,
   Truck,
   Settings,
+  Sparkles,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -36,14 +37,14 @@ const managementNav = [
 ];
 
 const activePastelClasses = [
-  "bg-[#e3f7ff] text-black font-medium",
-  "bg-[#fef3c7] text-black font-medium",
-  "bg-[#eceafe] text-black font-medium",
-  "bg-[#fde2f3] text-black font-medium",
-  "bg-[#dff6ff] text-black font-medium",
-  "bg-[#fef3c7] text-black font-medium",
-  "bg-[#eceafe] text-black font-medium",
-  "bg-[#fde2f3] text-black font-medium",
+  "bg-sidebar-primary/65 text-sidebar-primary-foreground font-semibold shadow-[0_10px_22px_-18px_rgba(219,39,119,0.7)]",
+  "bg-sidebar-primary/65 text-sidebar-primary-foreground font-semibold shadow-[0_10px_22px_-18px_rgba(219,39,119,0.7)]",
+  "bg-sidebar-primary/65 text-sidebar-primary-foreground font-semibold shadow-[0_10px_22px_-18px_rgba(219,39,119,0.7)]",
+  "bg-sidebar-primary/65 text-sidebar-primary-foreground font-semibold shadow-[0_10px_22px_-18px_rgba(219,39,119,0.7)]",
+  "bg-sidebar-primary/65 text-sidebar-primary-foreground font-semibold shadow-[0_10px_22px_-18px_rgba(219,39,119,0.7)]",
+  "bg-sidebar-primary/65 text-sidebar-primary-foreground font-semibold shadow-[0_10px_22px_-18px_rgba(219,39,119,0.7)]",
+  "bg-sidebar-primary/65 text-sidebar-primary-foreground font-semibold shadow-[0_10px_22px_-18px_rgba(219,39,119,0.7)]",
+  "bg-sidebar-primary/65 text-sidebar-primary-foreground font-semibold shadow-[0_10px_22px_-18px_rgba(219,39,119,0.7)]",
 ];
 
 const getActiveClassByIndex = (index: number) =>
@@ -57,26 +58,36 @@ export function AppSidebar() {
     path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
 
   return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader className="p-4">
+    <Sidebar collapsible="icon" className="border-r border-sidebar-border/70 bg-sidebar/90">
+      <SidebarHeader className="p-4 pt-5">
         <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-lg bg-sidebar-primary/20 flex items-center justify-center shrink-0 overflow-hidden">
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#ffe8f3] to-[#dff4ff] border border-sidebar-border/70 flex items-center justify-center shrink-0 overflow-hidden">
             <img src="/logo.png" alt="Viewr logo" className="h-8 w-8 object-contain" />
           </div>
           {!collapsed && (
             <div>
-              <h1 className="font-display text-lg font-bold text-black tracking-tight">
+              <h1 className="font-display text-lg font-semibold text-sidebar-foreground tracking-tight">
                 Viewr
               </h1>
-              <p className="text-xs text-sidebar-foreground/60">Dental AI Suite</p>
+              <p className="text-xs text-sidebar-foreground/60">Dental Intelligence</p>
             </div>
           )}
         </div>
+
+        {!collapsed && (
+          <div className="mt-4 rounded-xl border border-sidebar-border/70 bg-gradient-to-r from-[#fff5fb] to-[#eef8ff] p-3">
+            <p className="text-[11px] uppercase tracking-[0.14em] text-sidebar-foreground/65">Today</p>
+            <div className="mt-1 flex items-center gap-2 text-sm font-semibold text-sidebar-foreground">
+              <Sparkles className="h-3.5 w-3.5 text-sidebar-primary-foreground" />
+              4 reports pending review
+            </div>
+          </div>
+        )}
       </SidebarHeader>
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Main</SidebarGroupLabel>
+          <SidebarGroupLabel className="uppercase tracking-[0.12em] text-[11px]">Main</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainNav.map((item, index) => (
@@ -98,7 +109,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Management</SidebarGroupLabel>
+          <SidebarGroupLabel className="uppercase tracking-[0.12em] text-[11px]">Management</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {managementNav.map((item, index) => (
